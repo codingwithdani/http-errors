@@ -1,25 +1,24 @@
 let httpErrors = [
     {
-        "id": 1,
-        "title": "Continue",
-        "content": "",
-        "error": "100"
+        'id': 1,
+        'title': 'Continue',
+        'content': '',
+        'error': '100'
     },
     {
-        "id": 2,
-        "title": "Switching Protocols",
-        "content": "",
-        "error": "101"
+        'id': 2,
+        'title': 'Switching Protocols',
+        'content': '',
+        'error': '101'
     },
     {
-        "id": 3,
-        "title": "Processing",
-        "content": "",
-        "error": "102",
+        'id': 3,
+        'title': 'Processing',
+        'content': '',
+        'error': '102',
     }
 ]
 
-const { request, response } = require('express')
 const express = require('express')
 const app = express()
 
@@ -65,6 +64,11 @@ app.get('/api/errors/:id', (request, response) => {
 })
 
 
+app.use((request, response, next ) => {
+    response.status(404).json({
+        error: 'Not found'
+    })
+})
 
 const PORT = 3001
 app.listen(PORT)
