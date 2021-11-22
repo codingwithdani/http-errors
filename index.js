@@ -18,11 +18,13 @@ let httpErrors = [
         'error': '102',
     }
 ]
-
+const logger = require('./loggerMiddleware')
+const { response, request } = require('express')
 const express = require('express')
 const app = express()
 
 app.use(express.json())
+app.use(logger)
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello world</h1>')
@@ -44,7 +46,6 @@ app.post('/api/errors', (request, response) => {
     const ids = httpErrors.map(e => e.id)
 
     const maxId = Math.max(...ids)
-    console.log(request.body)
 
     const newError = {
         id: maxId + 1,
@@ -54,20 +55,22 @@ app.post('/api/errors', (request, response) => {
     }
 
     httpErrors = [...httpErrors, newError]
-    response.json(httpErrors)
+    response.status(201).json(httpErrors)
 })
 
-app.get('/api/errors/:id', (request, response) => {
+app.get('/api/errors/:id', (request, response, next) => {
     const id = Number(request.params.id)
     const error = httpErrors.find(e => e.id === id)
-    response.json(error)
+    if(error) { 
+        response.json(error)
+    } else {
+        response.status(404).end()
+    }
 })
 
 
 app.use((request, response, next ) => {
-    response.status(404).json({
-        error: 'Not found'
-    })
+    response.status(404).end()
 })
 
 const PORT = 3001
