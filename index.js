@@ -1,4 +1,4 @@
-let httpErrors = [
+/* let httpErrors = [
   {
     id: 1,
     title: 'Continue',
@@ -17,10 +17,13 @@ let httpErrors = [
     content: '',
     error: '102'
   }
-]
+] */
+require('./mongo')
 const logger = require('./loggerMiddleware')
 const cors = require('cors')
 const express = require('express')
+const HttpError = require('./models/HttpError')
+
 const app = express()
 
 app.use(cors())
@@ -32,7 +35,9 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/errors', (request, response) => {
-  response.json(httpErrors)
+  HttpError.find({}).then(errors => {
+    response.json(errors)
+  })
 })
 
 app.post('/api/errors', (request, response) => {
@@ -44,18 +49,12 @@ app.post('/api/errors', (request, response) => {
     })
   }
 
-  const ids = httpErrors.map(e => e.id)
-
-  const maxId = Math.max(...ids)
-
   const newError = {
-    id: maxId + 1,
     title: error.title,
     content: error.content,
     error: error.error
   }
 
-  httpErrors = [...httpErrors, newError]
   response.status(201).json(httpErrors)
 })
 
