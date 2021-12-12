@@ -1,5 +1,5 @@
 const logger = (request, response, next) => {
-    next()
+  next()
 }
 
 module.exports = logger
